@@ -37,8 +37,8 @@ The application runs on a pre-defined dataset of 5+ records covering normal, bou
 
 | ID | Artist | Title | Tracks | Platforms | Explicit | Expected Result (Indie Policy) | Expected Result (Major Policy) |
 |----|--------|-------|--------|-----------|----------|--------------------------------|--------------------------------|
-| 1  | Friendly Thug 52 NGG| COW | 1 | 5 | False | Valid Quote (~$50) | Valid Quote (~$150) |
+| 1  | Friendly Thug 52 NGG| COW | 1 | 5 | True | Valid Quote (~$50) | Valid Quote (~$150) |
 | 2  | Автоспорт | Береги себя | 8 | 15 | False | Valid Quote (~$120) | Valid Quote (~$350) |
 | 3  | Mnogoznaal | Гостиница Космос | 0 | 5 | False | **Rejected:** Tracks > 0 | **Rejected:** Tracks > 0 |
 | 4  | Test Artist | Boundary Test | 1 | 1 | False | Valid Quote (Min bound) | Valid Quote (Min bound) |
-| 5  | dmitry_rspkn | Kolutonskiy tape | 3 | 20 | True | Valid Quote (Explicit fee) | Valid Quote (Explicit fee) |
+| 5  | dmitry_rspkn | Kolutonskiy tape | 3 | 20 | False | Valid Quote (Explicit fee) | Valid Quote (Explicit fee) |
