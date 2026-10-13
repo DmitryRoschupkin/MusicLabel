@@ -42,3 +42,15 @@ The application runs on a pre-defined dataset of 5+ records covering normal, bou
 | 3  | Mnogoznaal | Гостиница Космос | 0 | 5 | False | **Rejected:** Tracks > 0 | **Rejected:** Tracks > 0 |
 | 4  | Test Artist | Boundary Test | 1 | 1 | False | Valid Quote (Min bound) | Valid Quote (Min bound) |
 | 5  | dmitry_rspkn | Kolutonskiy tape | 3 | 20 | False | Valid Quote (Explicit fee) | Valid Quote (Explicit fee) |
+
+## How to run?
+
+I submited MusicLabes.Tests folder inside the main archive. Open MusicLabel in terminal and just write
+`dotnet run` as usual.
+The move to tests folder:
+```bash
+cd ..
+cd MusicLabel.Tests
+dotnet test
+```
+Or just open folder as separate projects in IDE and run them.
