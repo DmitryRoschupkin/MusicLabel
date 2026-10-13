@@ -21,7 +21,7 @@ _Introduction to Functional Programming_
 ## 2. Input Fields & Domain Rules
 ### Input Fields (`ReleaseRequest`)
 * `ArtistName` (string): Name of the artist or band.
-* `TrackTitle` (string): Title of the release/album/single.
+* `ReleaseTitle` (string): Title of the album/single.
 * `TracksCount` (int): Number of tracks included in the release (must be > 0).
 * `HasExplicitContent` (bool): Indicates whether the release contains explicit lyrics.
 * `TargetPlatformsCount` (int): Number of streaming platforms to distribute to (1 to 25).
