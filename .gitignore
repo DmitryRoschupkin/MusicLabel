@@ -1,0 +1,19 @@
+# .NET Build Results
+[Bb]in/
+[Oo]bj/
+[Rr]estore/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Visual Studio / IDE caches
+.vs/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# OS generated files
+.DS_Store
+Thumbs.db
