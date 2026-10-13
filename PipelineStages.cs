@@ -43,7 +43,7 @@ public class PipelineStages
         );
     }
 
-    public static ReleaseQuote ProcessQuote(ValidRelease rawRelease, Func<ValidRelease, decimal, decimal> pricingRule)
+    public static ReleaseQuote ProcessRelease(ValidRelease rawRelease, Func<ValidRelease, decimal, decimal> pricingRule)
     {
         var normalized = NormalizeRelease(rawRelease);
         var costData = CalculateBaseCost(normalized);

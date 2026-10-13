@@ -23,6 +23,6 @@ public record ReleaseQuote(
     string ArtistName,
     string ReleaseTitle,
     decimal TotalCost,
-    string AppliedPolicy,
+    string AppliedRule,
     string Summary
 );

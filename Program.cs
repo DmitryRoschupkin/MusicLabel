@@ -41,10 +41,10 @@ class Program
                 continue;
             }
             
-            var quote = PipelineStages.ProcessQuote(validRelease!, rule);
+            var quote = PipelineStages.ProcessRelease(validRelease!, rule);
             
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"  [SUCCESS] Policy: {quote.AppliedPolicy} | Final Cost: ${quote.TotalCost}");
+            Console.WriteLine($"  [SUCCESS] Rule: {quote.AppliedRule} | Final Cost: ${quote.TotalCost}");
             Console.WriteLine(  $"            Summary: {quote.Summary}");
             Console.ResetColor();
         }
