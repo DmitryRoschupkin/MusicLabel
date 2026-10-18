@@ -1,5 +1,4 @@
-# Assignment 5: Composing Functions Using Pipelining
-(see READMEs for the next assignments below)
+# Assignment 6: Handling Temporal Coupling
 
 _Introduction to Functional Programming_
 
@@ -9,41 +8,22 @@ _Introduction to Functional Programming_
 
 **Target users**: Independent artists, music label administration
 
-**Planned Team:** Individual project (Dmitriy Rochshupkin).
+**Team:** Individual project (Dmitriy Rochshupkin).
 
 **Repo** https://github.com/DmitryRoschupkin/MusicLabel
+## Input Fields & Domain Rules
 
-## 1. Project Overview & Workflow
-**Business Workflow:**
-  1. **Input & Validation:** Raw release applications are parsed and validated against domain rules (positive track counts, valid platform numbers, non-empty names).
-  2. **Stage 1 (Normalization & Filtering):** Validated records are filtered and normalized (e.g., handling explicit content tags, formatting titles).
-  3. **Stage 2 (Cost & Priority Calculation):** Computes base fees and coefficients depending on the selected distribution policy (Indie vs. Major).
-  4. **Stage 3 (Quote Generation):** Produces final immutable quote records ready for review.
+**Input:** `RawReleaseRecord` (artist, title, tracks count, explicit flag, platforms count, tier; all strings).
 
-## 2. Input Fields & Domain Rules
-### Input Fields (`ReleaseRequest`)
-* `ArtistName` (string): Name of the artist or band.
-* `ReleaseTitle` (string): Title of the album/single.
-* `TracksCount` (int): Number of tracks included in the release (must be > 0).
-* `HasExplicitContent` (bool): Indicates whether the release contains explicit lyrics.
-* `TargetPlatformsCount` (int): Number of streaming platforms to distribute to (1 to 25).
-* `Tier` (string): Selected service level (*Indie* or *Major*).
+**Domain rules (all enforced in `ValidRelease.Create`):**
 
-### Business Rules
-* Releases with invalid track counts ($\le 0$) or out-of-range platform counts are rejected at the boundary.
-* Explicit content incurs an additional compliance processing fee.
-* Policies dynamically modify the cost calculation function via higher-order functions without mutating core pipeline state.
-
-## 3. Dataset & Expected Results
-The application runs on a pre-defined dataset of 5+ records covering normal, boundary, and failure cases:
-
-| ID | Artist | Title | Tracks | Platforms | Explicit | Expected Result (Indie Policy) | Expected Result (Major Policy) |
-|----|--------|-------|--------|-----------|----------|--------------------------------|--------------------------------|
-| 1  | Friendly Thug 52 NGG| COW | 1 | 5 | True | Valid Quote (~$50) | Valid Quote (~$150) |
-| 2  | Автоспорт | Береги себя | 8 | 15 | False | Valid Quote (~$120) | Valid Quote (~$350) |
-| 3  | Mnogoznaal | Гостиница Космос | 0 | 5 | False | **Rejected:** Tracks > 0 | **Rejected:** Tracks > 0 |
-| 4  | Test Artist | Boundary Test | 1 | 1 | False | Valid Quote (Min bound) | Valid Quote (Min bound) |
-| 5  | dmitry_rspkn | Kolutonskiy tape | 3 | 20 | False | Valid Quote (Explicit fee) | Valid Quote (Explicit fee) |
+| Rule | Condition |
+|---|---|
+| Artist | not empty or whitespace |
+| Title | not empty or whitespace |
+| Tracks | strictly greater than 0 |
+| Platforms | between 1 and 25 inclusive |
+| Tier | a defined `MusicTier` (`Indie` or `Major`) |
 
 ## How to run?
 
@@ -56,8 +36,6 @@ cd MusicLabel.Tests
 dotnet test
 ```
 Or just open folder as separate projects in IDE and run them.
-
-# Assignment 6: Handling Temporal Coupling
 
 ## 1. The Hidden Dependency (Unsafe Before Example)
 
@@ -95,3 +73,36 @@ The pricing rule is derived from the release tier, so there is no separate "load
 
 **Compile-time note:** the code `new ValidRelease(...)` or `release with { TracksCount = -1 }` from outside the class
 does not compile (private constructor, private init). It is described here instead of being added as uncompilable code.
+
+## Tests
+
+| Required case | Test(s) | Expected |
+|---|---|---|
+| Factory success | `Factory_ValidInput_ReturnsValidWithTrimmedData` | `Valid`, data trimmed and equal to input |
+| Factory rejection | `Factory_InvalidInput_ReturnsInvalidWithReason` (6 cases), `Parser_MalformedInput_ReturnsInvalid`, `Parser_NullArtist_...` | `Invalid` with the reason for each rule |
+| Distinct cases | `DistinctCases_ReleaseResult_...`, `DistinctCases_WorkflowStates_AllFourAreReachable` | each case reachable, correct match branch |
+| Normal operation | `NormalOperation_IndieRelease_...` (60), `NormalOperation_MajorRelease_...` (455), `IndieRule_MoreThanTenPlatforms_...` (67.50) | correct `Processed` quote |
+| Missing prerequisite | `MissingPrerequisite_ProcessWithoutValidation_IsRejected` | `Failed` containing "Prerequisite not met" |
+| Repeated operation | `RepeatedOperation_ReturnsExistingOutcome` | second call returns an equal state |
+| Boundary value | `Boundary_PlatformsCount_...` (0, 1, 25, 26), `Boundary_TracksCount_...` (0, 1) | exact limits follow the factory rule |
+| State preservation | `StatePreservation_*` (3 tests) | original state equal to its snapshot after a failed call |
+
+Total: 16 test methods (more cases counting `Theory` rows).
+
+**Latest test outcome:**
+
+```
+dmitriy@dmitriy:~/Documents/aitu/2-year/4-trim/ifp/MusicLabel.Tests$ dotnet test
+Восстановление завершено (0,9 с)
+  MusicLabel net10.0 успешно выполнено (0,3 с) → /home/dmitriy/Documents/aitu/2-year/4-trim/ifp/MusicLabel/bin/Debug/net10.0/MusicLabel.dll
+  MusicLabel.Tests net10.0 успешно выполнено (0,2 с) → bin/Debug/net10.0/MusicLabel.Tests.dll
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.4+50e68bbb8b (64-bit .NET 10.0.11)
+[xUnit.net 00:00:00.10]   Discovering: MusicLabel.Tests
+[xUnit.net 00:00:00.16]   Discovered:  MusicLabel.Tests
+[xUnit.net 00:00:00.21]   Starting:    MusicLabel.Tests
+[xUnit.net 00:00:00.36]   Finished:    MusicLabel.Tests
+  MusicLabel.Tests (тест) net10.0 успешно выполнено (1,1 с)
+
+Сводка теста: всего: 30; сбой: 0; успешно: 30; пропущено: 0; длительность: 1,1 с
+Сборка успешно выполнено через 2,9 с
+```
