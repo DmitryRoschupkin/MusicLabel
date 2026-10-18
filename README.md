@@ -77,3 +77,21 @@ var cost = PipelineStages.CalculateBaseCost(release); // The program can fall
 2. Invalid State Leakage: If a developer instantiated ValidRelease directly, negative track counts or invalid platform bounds bypassed checks, resulting in incorrect financial calculations (TotalCost) or runtime exceptions.
 
 3. Temporal Coupling: Methods had to be invoked in a strict, undocumented sequence.
+
+**Safe version (this project):** `ValidRelease.Create` must succeed before a `Validated` state can exist, and
+`ProcessStep` accepts only a `Validated` state; a `Pending` state is rejected with
+`"Prerequisite not met: Release must be validated before processing."`.
+The pricing rule is derived from the release tier, so there is no separate "load rules" step to forget.
+
+| Requirement | Where |
+|---|---|
+| Task 1: hidden dependency | This README, section above |
+| Task 2: validated factory | `Models.cs`: `ValidRelease.Create` (5 checks); used by `ReleaseValidator.ParseAndValidate`, which is called from `WorkflowTransitions.ValidateStep` |
+| Task 2: no unchecked construction | `Models.cs`: `private` constructor, `private init` properties, `sealed record` (so `with` cannot bypass the factory from outside) |
+| Task 3: distinct cases | `Models.cs`: `ReleaseResult` (`Valid`, `Invalid`); `WorkflowState.cs`: `WorkflowState` (`Pending`, `Validated`, `Processed`, `Failed`) |
+| Task 4: pattern matching | `WorkflowTransitions.ValidateStep`, `WorkflowTransitions.ProcessStep`, `Program.Render` (all cases explicit, fallback rejects) |
+| Task 5: safe operations | `WorkflowTransitions.*` are pure and return a new state; prerequisite is checked by state; failures become `Failed`, nothing is mutated |
+| Repeated operation | `ProcessStep` / `ValidateStep` return the existing state for already-completed steps |
+
+**Compile-time note:** the code `new ValidRelease(...)` or `release with { TracksCount = -1 }` from outside the class
+does not compile (private constructor, private init). It is described here instead of being added as uncompilable code.
