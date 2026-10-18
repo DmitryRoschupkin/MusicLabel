@@ -1,6 +1,6 @@
 namespace MusicLabel;
 
-public class PricingRules
+public static class PricingRules
 {
     public static decimal IndieRule(ValidRelease release, decimal baseCost)
     {
@@ -13,4 +13,11 @@ public class PricingRules
         decimal priorityFee = 100.0m;
         return Math.Round(baseCost + priorityFee + (release.TracksCount * 15.0m), 2);
     }
+
+    public static Func<ValidRelease, decimal, decimal> ForTier(MusicTier tier) => tier switch
+    {
+        MusicTier.Indie => IndieRule,
+        MusicTier.Major => MajorRule,
+        _ => throw new ArgumentOutOfRangeException(nameof(tier), tier, "Unknown tier")
+    };
 }

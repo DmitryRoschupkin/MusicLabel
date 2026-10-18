@@ -1,17 +1,8 @@
 namespace MusicLabel;
 
-public class PipelineStages
+public static class PipelineStages
 {
-    public static ValidRelease NormalizeRelease(ValidRelease validRelease)
-    {
-        return validRelease with
-        {
-            ReleaseTitle = validRelease.ReleaseTitle.Trim(),
-            ArtistName = validRelease.ArtistName.Trim()
-        };
-    }
-
-    public static (ValidRelease Release, decimal BaseCost) CalculateBaseCost(ValidRelease validRelease)
+    public static decimal CalculateBaseCost(ValidRelease validRelease)
     {
         decimal costPerTrack = 20m;
         decimal costPerPlatform = 5m;
@@ -21,7 +12,7 @@ public class PipelineStages
 
         if (validRelease.HasExplicitContent) baseCost += 15m;
         
-        return (validRelease, baseCost);
+        return baseCost;
     }
 
     public static ReleaseQuote FormatQuote((ValidRelease Release, decimal BaseCost) input,
@@ -38,17 +29,11 @@ public class PipelineStages
             release.ArtistName,
             release.ReleaseTitle,
             finalCost,
-            release.Tier,
+            release.Tier.ToString(),
             summary
         );
     }
 
-    public static ReleaseQuote ProcessRelease(ValidRelease rawRelease, Func<ValidRelease, decimal, decimal> pricingRule)
-    {
-        var normalized = NormalizeRelease(rawRelease);
-        var costData = CalculateBaseCost(normalized);
-        var quote = FormatQuote(costData, pricingRule);
-        
-        return quote;
-    }
+    public static ReleaseQuote ExecutePricing(ValidRelease release, Func<ValidRelease, decimal, decimal> pricingRule)
+        => FormatQuote((release, CalculateBaseCost(release)), pricingRule);
 }

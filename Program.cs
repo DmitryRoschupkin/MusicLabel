@@ -11,42 +11,50 @@ class Program
             new("Автоспорт", "Береги себя", "8", "false", "15", "Major"),
             new("Mnogoznaal", "Гостиница Космос", "0", "false", "5", "Indie"),
             new("Test Artist", "Boundary test", "1", "false", "1", "Indie"),
+            new ("Test Artist", "Boundary OK", "1", "false", "25", "Indie"),
             new("dmitry_rspkn", "Kolutonskiy Tape", "3", "false", "20", "Major")
         };
         
-        Console.WriteLine("RUNNING WITH INDIE RULE");
-        RunPipelineWithRule(rawDataset, PricingRules.IndieRule, "Indie rule");
+        Console.WriteLine("\nRUNNING WORKFLOW PIPELINE (pricing rule is chosen by release tier)");
+        RunWorkflowPipeline(rawDataset);
         
-        Console.WriteLine("RUNNING WITH MAJOR RULE");
-        RunPipelineWithRule(rawDataset, PricingRules.MajorRule, "Major rule");
+        Console.WriteLine("\nDEMO: MISSING PREREQUISITE (ProcessStep without ValidateStep)");
+        var skipped = WorkflowTransitions.ProcessStep(new WorkflowState.Pending(rawDataset[0]));
+        Console.WriteLine(Render(skipped));
     }
 
-    private static void RunPipelineWithRule(
-        IEnumerable<RawReleaseRecord> rawRecords,
-        Func<ValidRelease, decimal, decimal> rule,
-        string ruleName
-    )
+    private static void RunWorkflowPipeline(IEnumerable<RawReleaseRecord> rawRecords)
     {
         foreach (var rawRecord in rawRecords)
         {
             Console.WriteLine($"Processing input for artist: {rawRecord.ArtistName} ({rawRecord.ReleaseTitle})");
             
-            var (validRelease, error) = ReleaseValidator.ParseAndValidate(rawRecord);
+            WorkflowState state = new WorkflowState.Pending(rawRecord);
 
-            if (error != null)
+            state = WorkflowTransitions.ValidateStep(state);
+            
+            state = WorkflowTransitions.ProcessStep(state);
+            
+            Console.WriteLine(Render(state));
+
+            if (state is WorkflowState.Processed)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"  [REJECTED] {error}");
-                Console.ResetColor();
-                continue;
+                var repeatedState = WorkflowTransitions.ProcessStep(state);
+                Console.WriteLine(repeatedState == state
+                    ? "[SAFE REPEAT] Repeated operation returned the existing outcome, no recalculation."
+                    : "[ERROR] Repeated operation changed the state");
             }
-            
-            var quote = PipelineStages.ProcessRelease(validRelease!, rule);
-            
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"  [SUCCESS] Rule: {quote.AppliedRule} | Final Cost: ${quote.TotalCost}");
-            Console.WriteLine(  $"            Summary: {quote.Summary}");
-            Console.ResetColor();
         }
     }
+
+    private static string Render(WorkflowState state) => state switch
+    {
+        WorkflowState.Processed(_, var quote) =>
+            $"[SUCCESS] Tier: {quote.AppliedRule} | Final Cost: {quote.TotalCost} \nSummary: {quote.Summary}",
+        WorkflowState.Failed(var reason) =>
+            $"[REJECTED] {reason}",
+        WorkflowState.Pending => "[INCOMPLETE] Release is still pending validation",
+        WorkflowState.Validated => "[INCOMPLETE] Release is validated but not yet priced",
+        _ => "[REJECTED] Unknown workflow state."
+    };
 }
