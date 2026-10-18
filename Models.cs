@@ -26,3 +26,9 @@ public record ReleaseQuote(
     string AppliedRule,
     string Summary
 );
+
+public enum MusicTier
+{
+    Indie,
+    Major
+}

@@ -1,4 +1,6 @@
 # Assignment 5: Composing Functions Using Pipelining
+(see READMEs for the next assignments below)
+
 _Introduction to Functional Programming_
 
 ---
@@ -54,3 +56,24 @@ cd MusicLabel.Tests
 dotnet test
 ```
 Or just open folder as separate projects in IDE and run them.
+
+# Assignment 6: Handling Temporal Coupling
+
+## 1. The Hidden Dependency (Unsafe Before Example)
+
+### The Problem
+In earlier versions of the pipeline, records were processed via direct instantiation:
+```csharp
+// UNSAFE BEFORE EXAMPLE (Do not use in active application path)
+var raw = new RawReleaseRecord("Friendly Thug", "COW", "1", "true", "5", "Indie");
+// Direct constructor call could create an object without validation:
+var release = new ValidRelease(raw.ArtistName, raw.ReleaseTitle, -5, ...); 
+var cost = PipelineStages.CalculateBaseCost(release); // The program can fall
+```
+
+### The Observable Failure
+1. Implicit Order: Correctness relied on the developer remembering to invoke ReleaseValidator.ParseAndValidate() before passing the object to pipeline stages.
+
+2. Invalid State Leakage: If a developer instantiated ValidRelease directly, negative track counts or invalid platform bounds bypassed checks, resulting in incorrect financial calculations (TotalCost) or runtime exceptions.
+
+3. Temporal Coupling: Methods had to be invoked in a strict, undocumented sequence.
