@@ -30,22 +30,20 @@ public sealed record ValidRelease
         Tier = tier;
     }
 
-    public static ReleaseResult Create(string artistName, string releaseTitle,
+    public static Result<ValidRelease> Create(string artistName, string releaseTitle,
         int tracksCount, bool hasExplicitContent, int targetPlatformsCount, MusicTier tier)
     {
         if (string.IsNullOrWhiteSpace(artistName))
-            return new ReleaseResult.Invalid("Validation Error: ArtistName is required.");
+            return Result<ValidRelease>.Fail(Errors.ArtistRequired());
         if (string.IsNullOrWhiteSpace(releaseTitle))
-            return new ReleaseResult.Invalid("Validation Error: ReleaseTitle is required.");
+            return Result<ValidRelease>.Fail(Errors.TitleRequired());
         if (tracksCount <= 0)
-            return new ReleaseResult.Invalid($"Validation Error: Invalid tracks count ({tracksCount})," +
-                                             $" must be strictly > 0.");
+            return Result<ValidRelease>.Fail(Errors.InvalidTracksCount(tracksCount));
         if (targetPlatformsCount < 1 || targetPlatformsCount > 25)
-            return new ReleaseResult.Invalid($"Validation Error: Target platforms count ({targetPlatformsCount})" +
-                                             $" must be between 1 and 25.");
+            return Result<ValidRelease>.Fail(Errors.InvalidPlatformsCount(targetPlatformsCount));
         if (!Enum.IsDefined(tier))
-            return new ReleaseResult.Invalid($"Validation Error: Invalid tier ({tier}).");
-        return new ReleaseResult.Valid(new ValidRelease(
+            return Result<ValidRelease>.Fail(Errors.InvalidTier(tier));
+        return Result<ValidRelease>.Ok(new ValidRelease(
             artistName.Trim(),
             releaseTitle.Trim(),
             tracksCount,
@@ -68,13 +66,4 @@ public enum MusicTier
 {
     Indie,
     Major
-}
-
-public abstract record ReleaseResult
-{
-    private ReleaseResult() { }
-
-    public record Valid(ValidRelease Release) : ReleaseResult;
-
-    public record Invalid(string Reason) : ReleaseResult;
 }
