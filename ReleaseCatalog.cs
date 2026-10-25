@@ -1,16 +1,17 @@
 namespace MusicLabel;
 
-public sealed record CatalogEntry(
-    string Id,
-    string ArtistName,
-    string ReleaseTitle,
-    string TracksCount,
-    string HasExplicitContent,
-    string TargetPlatformCount,
-    string Tier)
+public sealed record CatalogEntry
 {
+    public required string Id { get; init; }
+    public required string ArtistName { get; init; }
+    public required string ReleaseTitle { get; init; }
+    public required string TracksCount { get; init; }
+    public required string HasExplicitContent { get; init; }
+    public required string TargetPlatformsCount { get; init; }
+    public required string Tier { get; init; }
+
     public RawReleaseRecord ToRaw() =>
-        new (ArtistName, ReleaseTitle, TracksCount, HasExplicitContent, TargetPlatformCount, Tier);
+        new(ArtistName, ReleaseTitle, TracksCount, HasExplicitContent, TargetPlatformsCount, Tier);
 }
 
 public sealed class ReleaseCatalog
