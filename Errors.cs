@@ -1,7 +1,29 @@
 namespace MusicLabel;
 
+public enum ErrorKind { Domain, Operational }
+
+public sealed record Error(string Code, string Message, ErrorKind Kind = ErrorKind.Domain)
+{
+    public override string ToString() => $"[{Code}] {Message}";
+}
+
 public static class Errors
 {
+    public static Error CatalogIdMissing(int index) =>
+        new("CATALOG_ID_MISSING", $"Catalog entry #{index} has no id.", ErrorKind.Operational);
+
+    public static Error DuplicateCatalogId(string id) =>
+        new("DUPLICATE_CATALOG_ID", $"Catalog contains more than one entry with id '{id}'.", ErrorKind.Operational);
+
+    public static Error FileNotFound(string path) =>
+        new("FILE_NOT_FOUND", $"Catalog file '{path}' was not found.", ErrorKind.Operational);
+
+    public static Error FileUnreadable(string path, string detail) =>
+        new("FILE_UNREADABLE", $"Catalog file '{path}' could not be read: {detail}", ErrorKind.Operational);
+
+    public static Error MalformedFile(string path, string detail) =>
+        new("MALFORMED_FILE", $"Catalog file '{path}' contains malformed JSON: {detail}", ErrorKind.Operational);
+    
     public static Error ArtistRequired() =>
         new("ARTIST_REQUIRED", "Validation Error: ArtistName is required.");
 

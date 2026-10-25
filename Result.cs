@@ -1,10 +1,5 @@
 namespace MusicLabel;
 
-public sealed record Error(string Code, string Message)
-{
-    public override string ToString() => $"{Code}: {Message}";
-};
-
 public abstract record Result<T>
 {
     private Result() {}
