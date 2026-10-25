@@ -1,0 +1,10 @@
+[
+  { "id": "REL-001", "artistName": "Friendly Thug 52 NGG", "releaseTitle": "COW",
+    "tracksCount": "1", "hasExplicitContent": "true", "targetPlatformsCount": "5", "tier": "Indie" },
+  { "id": "REL-002", "artistName": "Автоспорт", "releaseTitle": "Береги себя",
+    "tracksCount": "8", "hasExplicitContent": "false", "targetPlatformsCount": "15", "tier": "Major" },
+  { "id": "REL-003", "artistName": "Mnogoznaal", "releaseTitle": "Гостиница Космос",
+    "tracksCount": "0", "hasExplicitContent": "false", "targetPlatformsCount": "5", "tier": "Indie" },
+  { "id": "REL-004", "artistName": "Test Artist", "releaseTitle": "Boundary test",
+    "tracksCount": "1", "hasExplicitContent": "false", "targetPlatformsCount": "1", "tier": "Indie" }
+]
