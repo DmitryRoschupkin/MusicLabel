@@ -6,5 +6,9 @@
   { "id": "REL-003", "artistName": "Mnogoznaal", "releaseTitle": "Гостиница Космос",
     "tracksCount": "0", "hasExplicitContent": "false", "targetPlatformsCount": "5", "tier": "Indie" },
   { "id": "REL-004", "artistName": "Test Artist", "releaseTitle": "Boundary test",
-    "tracksCount": "1", "hasExplicitContent": "false", "targetPlatformsCount": "1", "tier": "Indie" }
+    "tracksCount": "1", "hasExplicitContent": "false", "targetPlatformsCount": "1", "tier": "Indie" },
+  { "id": "REL-005", "artistName": "Long Player", "releaseTitle": "Twelve Tracks",
+    "tracksCount": "12", "hasExplicitContent": "false", "targetPlatformsCount": "2", "tier": "Indie" },
+  { "id": "REL-006", "artistName": "Another Artist", "releaseTitle": "Another One",
+    "tracksCount": "1", "hasExplicitContent": "true", "targetPlatformsCount": "5", "tier": "Indie" }
 ]

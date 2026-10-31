@@ -40,4 +40,8 @@ public sealed class ReleaseCatalog
         id is not null && _byId.TryGetValue(id.Trim(), out var raw)
         ? Maybe.Some(raw)
         : Maybe.None<RawReleaseRecord>();
+    
+    public IEnumerable<(string Id, RawReleaseRecord Raw)> Entries =>
+        _byId.OrderBy(kv => kv.Key, StringComparer.Ordinal)
+             .Select(kv => (kv.Key, kv.Value));
 }
