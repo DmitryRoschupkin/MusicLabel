@@ -7,4 +7,11 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Include="native/lib/linux-x64/libmusiclabel.so"
+          Link="libmusiclabel.so"
+          CopyToOutputDirectory="PreserveNewest"
+          Condition="Exists('native/lib/linux-x64/libmusiclabel.so')" />
+  </ItemGroup>
+
 </Project>

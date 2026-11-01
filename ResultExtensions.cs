@@ -47,4 +47,12 @@ public static class ResultExtensions
         Result<T>.Failure(var error) => Result<T>.Fail(f(error)),
         _ => throw new UnreachableException()
     };
+    
+    public static Result<IReadOnlyList<T>> Sequence<T>(this IEnumerable<Result<T>> results)
+    {
+        var (values, errors) = results.Partition();
+        return errors.Count > 0
+            ? Result<IReadOnlyList<T>>.Fail(errors[0])
+            : Result<IReadOnlyList<T>>.Ok(values);
+    }
 }

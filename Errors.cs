@@ -53,4 +53,20 @@ public static class Errors
 
     public static Error InvalidTransition(string fromState) =>
         new("INVALID_TRANSITION", $"Invalid state transition from {fromState}.");
+    
+    public static Error ExportFailed(string path, string detail) =>
+        new("EXPORT_FAILED", $"Report could not be written to '{path}': {detail}", ErrorKind.Operational);
+
+    public static Error NativeLibraryMissing(string detail) =>
+        new("NATIVE_LIBRARY_MISSING", $"Native library 'musiclabel' could not be loaded: {detail}", ErrorKind.Operational);
+
+    public static Error NativeBindingFailed(string detail) =>
+        new("NATIVE_BINDING_FAILED", $"Native function could not be bound (missing export or wrong architecture): {detail}", ErrorKind.Operational);
+
+    public static Error InvalidFeeInput(string detail) =>
+        new("INVALID_FEE_INPUT", $"Fee calculation rejected the input: {detail}");
+
+    public static Error NativeRejectedInput(long amountCents, int feeBps) =>
+        new("NATIVE_REJECTED_INPUT",
+            $"Native function rejected amount={amountCents} cents, rate={feeBps} bps despite validation.", ErrorKind.Operational);
 }
